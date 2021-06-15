@@ -1,12 +1,28 @@
-import { useDebugValue, useState } from "react";
+import { useState, useEffect } from "react";
+import Pet from './Pet'
 
 const ANIMALS = ["bird", "dog", "cat", "rabbit", "reptile"];
-const BREEDS = [];
 
 const SearchParams = () => {
-    const [location, setLocation] = useState("Petaluma, CA");
+    const [location, setLocation] = useState("");
     const [animal, setAnimal] = useState("dog");
     const [breed, setBreed] = useState("");
+    const [pets, setPets] = useState([]);
+    const breeds = [];
+
+    useEffect(() => {
+        requestPets();
+    }, []);
+
+    async function requestPets() {
+        const res = await fetch(
+            `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
+        );
+        const json = await res.json();
+        console.log(json);
+
+        setPets(json.pets);
+    }
 
     function updateLocation(e) {
         setLocation(e.target.value);
@@ -34,6 +50,7 @@ const SearchParams = () => {
                 <label htmlFor="breed">
                     Breed
                     <select
+                        disabled={!breeds.length}
                         id="breed"
                         value={breed}
                         onChange={e => setBreed(e.target.value)}
@@ -41,12 +58,17 @@ const SearchParams = () => {
                     >
                         <option />
                         {
-                            BREEDS.map(b => <option value={b} key={b}>{b}</option>)
+                            breeds.map(b => <option value={b} key={b}>{b}</option>)
                         }
                     </select>
                 </label>
                 <button>Submit</button>
             </form>
+            {
+                pets.map((pet) => (
+                    <Pet name={pet.name} breed={pet.breed} location={pet.location} key={pet.id} />
+                ))
+            }
         </div>
     )
 }

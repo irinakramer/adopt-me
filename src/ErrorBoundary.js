@@ -11,7 +11,7 @@ class ErrorBoundary extends Component {
     }
     componentDidCatch(error, info) {
         console.log("ErrorBounday caught an error: ", error, info);
-        setTimeout(() => this.setState({ redirect: true }), 5000)
+        setTimeout(() => this.setState({ redirect: true }), 5000);
     }
     render() {
         if (this.state.redirect) {
